@@ -40,6 +40,16 @@ public class ExclamationTopology {
 
   public static class ExclamationBolt extends BaseRichBolt {
     OutputCollector _collector;
+	private String stringToAppend;
+    
+    public ExclamationBolt() {
+		this("!!!");
+	}
+    
+    public ExclamationBolt(String stringToAppend) {
+		super();
+    	this.stringToAppend = stringToAppend;
+	}
 
     @Override
     public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
@@ -48,7 +58,7 @@ public class ExclamationTopology {
 
     @Override
     public void execute(Tuple tuple) {
-      _collector.emit(tuple, new Values(tuple.getString(0) + "!!!"));
+      _collector.emit(tuple, new Values(tuple.getString(0) + stringToAppend));
       _collector.ack(tuple);
     }
 
@@ -64,8 +74,8 @@ public class ExclamationTopology {
     TopologyBuilder builder = new TopologyBuilder();
 
     builder.setSpout("word", new TestWordSpout(), 10);
-    builder.setBolt("exclaim1", new ExclamationBolt(), 3).shuffleGrouping("word");
-    builder.setBolt("exclaim2", new ExclamationBolt(), 2).shuffleGrouping("exclaim1");
+    builder.setBolt("exclaim1", new ExclamationBolt("-ex1"), 3).shuffleGrouping("word");
+    builder.setBolt("exclaim2", new ExclamationBolt("-ex2"), 2).shuffleGrouping("exclaim1");
 
     Config conf = new Config();
     conf.setDebug(true);
