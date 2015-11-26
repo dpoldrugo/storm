@@ -58,7 +58,7 @@ public class ExclamationTopology {
 
     @Override
     public void execute(Tuple tuple) {
-      _collector.emit(tuple, new Values(tuple.getString(0) + stringToAppend));
+      _collector.emit(tuple, new Values(String.format("%s%s", tuple.getString(0), stringToAppend)));
       _collector.ack(tuple);
     }
 
